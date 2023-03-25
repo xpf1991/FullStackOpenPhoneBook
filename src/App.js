@@ -24,7 +24,7 @@ const App = () => {
 
   const handleNameFilter = (event) => {
     setNameFilter(event.target.value)
-    console.log('nameFilter content is: ', nameFilter)
+    //console.log('nameFilter content is: ', nameFilter)
   }
 
   const handleNameInput = (event) => {
@@ -43,6 +43,7 @@ const App = () => {
     }
     const found = persons.find((person) => person.name === newName)
     console.log('exist person is: ', found)
+    // 如果之前没有录入此人信息
     if (found === undefined) {
       //console.log('nwePerson object,', newPerson)
       //console.log('persons object,', persons)
@@ -53,12 +54,17 @@ const App = () => {
         })
 
       setMessage(`${newName}'s info is added`)
-      setTimeout(() => { setMessage(null) }, 5000)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
 
       setNewName('')
       setNewNumber('')
       setNameFilter('')
-    } else {
+
+    }
+    // 如果之前存在此人信息
+    else {
       const id = found.id
       if (window.confirm(`${newName} is already added to the phoneBook, replace the old number with the new one?`)) {
         Services
@@ -67,27 +73,25 @@ const App = () => {
             setPersons(persons.map(person => {
               return person.id !== id ? person : response
             }))
+            setMessage(`${newName}'s info is updated`)
+            setTimeout(() => {
+              setMessage(null)
+              setNewName('')
+              setNewNumber('')
+              setNameFilter('')
+            }, 5000)
           })
           .catch(errror => {
             setMessage(`${newName}'s info is deleted`)
-            setTimeout(() => { setMessage(null) }, 5000)
+            setTimeout(() => {
+              setMessage(null)
+              setPersons(persons.filter(person => {
+                return person.id !== id
+              }))
+            }, 5000)
           })
-
-        setMessage(`${newName}'s info is updated`)
-        setTimeout(() => {
-          setMessage(null)
-          setPersons(persons.filter(person => {
-            return person.id !== id
-          }))
-        }, 5000)
-
-        // 接受修改就删除文本框内容，不接受保留
-        setNewName('')
-        setNewNumber('')
-        setNameFilter('')
       }
     }
-
   }
 
   const handleDelete = (id) => {

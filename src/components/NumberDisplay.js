@@ -1,4 +1,5 @@
 const SinglePersonDisplay = ({ person, handleDelete }) => {
+
     const handleDelButton = (person) => {
         if (window.confirm(`Do you want to delete ${person.name}'s info?`)) {
             handleDelete(person.id)
