@@ -3,18 +3,7 @@ import FilterPart from './components/FilterPart'
 import FormAdd from './components/FormAdd'
 import NumberDisplay from './components/NumberDisplay'
 import Services from './services/Services'
-
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  } else {
-    return (
-      <div className='error'>
-        {message}
-      </div>
-    )
-  }
-}
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
