@@ -4,11 +4,24 @@ import FormAdd from './components/FormAdd'
 import NumberDisplay from './components/NumberDisplay'
 import Services from './services/Services'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  } else {
+    return (
+      <div className='error'>
+        {message}
+      </div>
+    )
+  }
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [nameFilter, setNameFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     console.log('useEffect is on going')
@@ -49,6 +62,10 @@ const App = () => {
         .then(response => {
           setPersons(persons.concat(response))
         })
+
+      setMessage(`${newName}'s info is added`)
+      setTimeout(() => { setMessage(null) }, 5000)
+
       setNewName('')
       setNewNumber('')
       setNameFilter('')
@@ -62,6 +79,19 @@ const App = () => {
               return person.id !== id ? person : response
             }))
           })
+          .catch(errror => {
+            setMessage(`${newName}'s info is deleted`)
+            setTimeout(() => { setMessage(null) }, 5000)
+          })
+
+        setMessage(`${newName}'s info is updated`)
+        setTimeout(() => {
+          setMessage(null)
+          setPersons(persons.filter(person => {
+            return person.id !== id
+          }))
+        }, 5000)
+
         // 接受修改就删除文本框内容，不接受保留
         setNewName('')
         setNewNumber('')
@@ -82,8 +112,8 @@ const App = () => {
 
   return (
     <div>
-
       <h2>Phonebook filter</h2>
+      <Notification message={message} />
       <FilterPart nameFilter={nameFilter} handleNameFilter={handleNameFilter} />
 
       <h2>Add a new</h2>
