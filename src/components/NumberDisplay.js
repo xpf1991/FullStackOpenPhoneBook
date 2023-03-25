@@ -1,4 +1,18 @@
-const NumberDisplay = ({ persons, nameFilter }) => {
+const SinglePersonDisplay = ({ person, handleDelete }) => {
+    const handleDelButton = (person) => {
+        if (window.confirm(`Do you want to delete ${person.name}'s info?`)) {
+            handleDelete(person.id)
+        }
+    }
+    return (
+        <li key={person.name}>
+            {person.name} {person.number}
+            <button onClick={() => handleDelButton(person)}>Delete</button>
+        </li>
+    )
+}
+
+const NumberDisplay = ({ persons, nameFilter, handleDelete }) => {
     //console.log('persons and nameFilter are: ', persons, nameFilter)
     if (nameFilter !== '') {
         //debugger
@@ -8,7 +22,9 @@ const NumberDisplay = ({ persons, nameFilter }) => {
             return (
                 <ul>
                     {personsFilter.map((person) => {
-                        return (<li key={person.name}>{person.name} {person.number}</li>)
+                        return (
+                            <SinglePersonDisplay person={person} handleDelete={handleDelete} />
+                        )
                     })}
                 </ul>
             )
@@ -17,7 +33,9 @@ const NumberDisplay = ({ persons, nameFilter }) => {
         return (
             <ul>
                 {persons.map((person) => {
-                    return (<li key={person.name}>{person.name} {person.number}</li>)
+                    return (
+                        <SinglePersonDisplay person={person} handleDelete={handleDelete} />
+                    )
                 })}
             </ul>
         )

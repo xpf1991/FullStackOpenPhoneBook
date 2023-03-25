@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import FilterPart from './components/FilterPart'
 import FormAdd from './components/FormAdd'
 import NumberDisplay from './components/NumberDisplay'
-import axios from 'axios'
+import Services from './services/Services'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,11 +12,10 @@ const App = () => {
 
   useEffect(() => {
     console.log('useEffect is on going')
-    axios
-      .get('http://localhost:3001/Persons')
-      .then(response => {
-        console.log('axios is on going')
-        setPersons(response.data)
+    Services
+      .getAll()
+      .then(personsAll => {
+        setPersons(personsAll)
       })
   }, [])
   console.log(`gets ${persons.length} person`)
@@ -36,21 +35,49 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    const newPerson = {
+      name: newName,
+      number: newNumber
+    }
     const found = persons.find((person) => person.name === newName)
+    console.log('exist person is: ', found)
     if (found === undefined) {
-      const newPerson = {
-        name: newName,
-        number: newNumber
-      }
-      console.log('nwePerson object,', newPerson)
-      setPersons(persons.concat(newPerson))
-      console.log('persons object,', persons)
+      //console.log('nwePerson object,', newPerson)
+      //console.log('persons object,', persons)
+      Services
+        .addPerson(newPerson)
+        .then(response => {
+          setPersons(persons.concat(response))
+        })
       setNewName('')
       setNewNumber('')
       setNameFilter('')
     } else {
-      alert(`${newName} is already added to phonebook`)
+      const id = found.id
+      if (window.confirm(`${newName} is already added to the phoneBook, replace the old number with the new one?`)) {
+        Services
+          .changeInfo(id, newPerson)
+          .then(response => {
+            setPersons(persons.map(person => {
+              return person.id !== id ? person : response
+            }))
+          })
+        // 接受修改就删除文本框内容，不接受保留
+        setNewName('')
+        setNewNumber('')
+        setNameFilter('')
+      }
     }
+
+  }
+
+  const handleDelete = (id) => {
+    Services
+      .deletePerson(id)
+      .then(deletedPerson => {
+        console.log('deletedPerson is', deletedPerson)
+        setPersons(persons.filter(person => person.id !== id))
+      })
   }
 
   return (
@@ -66,7 +93,11 @@ const App = () => {
         handleSubmit={handleSubmit} newName={newName} />
 
       <h2>Numbers</h2>
-      <NumberDisplay persons={persons} nameFilter={nameFilter} />
+      <NumberDisplay
+        persons={persons}
+        nameFilter={nameFilter}
+        handleDelete={handleDelete}
+      />
 
     </div>
   )
