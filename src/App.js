@@ -51,12 +51,18 @@ const App = () => {
         .addPerson(newPerson)
         .then(response => {
           setPersons(persons.concat(response))
+          setMessage(`${newName}'s info is added`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
-
-      setMessage(`${newName}'s info is added`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
+        //added catch error for error message showing
+        .catch(error => {
+          setMessage(`Add person failed:${error.response.data}`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
 
       setNewName('')
       setNewNumber('')
